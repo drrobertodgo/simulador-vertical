@@ -109,24 +109,14 @@ export default function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
-  // Clave proporcionada por el entorno de ejecución (Vercel)
-  const apiKey = typeof import.meta !== 'undefined' ? (import.meta as any).env.VITE_GEMINI_API_KEY : '';
-
-  // Filter questions based on selected area
+  // 🔴 CAMBIA ESTA LÍNEA EN STACKBLITZ POR: const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   const activeQuestions = questionsDatabase.filter(q => area === null || q.area === area);
   const currentQuestion = activeQuestions[currentQuestionIndex];
 
-  // Lógica de llamada a la IA con reintentos automáticos
   const generateQuestionWithAI = async (selectedRole: Role, selectedArea: Area) => {
     setIsGenerating(true);
     setErrorMsg(null);
-
-    // Validación temprana de la API Key
-    if (!apiKey || apiKey === "undefined") {
-      setErrorMsg("Falta tu llave secreta de Google (API Key). Asegúrate de haberla agregado en Vercel como VITE_GEMINI_API_KEY y vuelve a realizar el Deploy.");
-      setIsGenerating(false);
-      return;
-    }
     
     const areaNames = {
       1: "Aspectos Normativos (LGE, Derechos NNA, Violencia Sexual 2025, Acoso Escolar)",
@@ -150,15 +140,14 @@ export default function App() {
     4. explanation: Justificación técnica citando explícitamente el documento, ley o autor correspondiente de la bibliografía señalada.
     5. hack: Un tip estratégico para el sustentante sobre cómo identificar la trampa del reactivo o descartar opciones rápidamente en este tipo de formato CENEVAL.`;
 
-    let retries = 3;
+    let retries = 5;
     let delay = 1000;
     let success = false;
     let lastError = "";
 
     while (retries > 0 && !success) {
       try {
-        // USO DEL MODELO PÚBLICO GEMINI 1.5 FLASH
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -204,8 +193,8 @@ export default function App() {
         
         if (generatedText) {
           const newQuestion = JSON.parse(generatedText);
-          newQuestion.id = Date.now(); // override ID
-          newQuestion.area = selectedArea; // force correct area
+          newQuestion.id = Date.now(); 
+          newQuestion.area = selectedArea; 
           setQuestionsDatabase(prev => [...prev, newQuestion]);
           success = true;
         } else {
@@ -240,7 +229,6 @@ export default function App() {
     setScore(0);
     setErrorMsg(null);
     
-    // Verificar si hay preguntas iniciales para esta área
     const hasQuestionsForArea = questionsDatabase.some(q => q.area === selectedArea);
     if (!hasQuestionsForArea) {
       await generateQuestionWithAI(role, selectedArea);
@@ -258,7 +246,6 @@ export default function App() {
 
   const nextQuestion = async () => {
     if (currentQuestionIndex === activeQuestions.length - 1) {
-       // Si llegamos al final, generamos un reactivo nuevo infinitamente
        await generateQuestionWithAI(role, area);
     }
     setSelectedAnswer(null);
@@ -276,9 +263,6 @@ export default function App() {
     setErrorMsg(null);
   };
 
-  // --- RENDERIZADO CONDICIONAL ---
-
-  // 1. Pantalla de Inicio: Selección de Rol
   if (!role) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 font-sans text-slate-800">
@@ -333,7 +317,6 @@ export default function App() {
     );
   }
 
-  // 2. Pantalla de Selección de Área
   if (!area) {
     return (
       <div className="min-h-screen bg-slate-50 p-6 lg:p-12 font-sans text-slate-800 flex flex-col items-center">
@@ -377,7 +360,6 @@ export default function App() {
     );
   }
 
-  // Pantalla de Error o Carga Inicial AI
   if (isGenerating && !currentQuestion) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 font-sans text-slate-800">
@@ -401,12 +383,10 @@ export default function App() {
 
   if (!currentQuestion) return null;
 
-  // 4. Pantalla de Tutor/Reactivo Activo
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-800 flex justify-center">
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
         
-        {/* Left Column: Context & Progress */}
         <div className="lg:col-span-4 flex flex-col gap-6">
           <div className="bg-white p-6 rounded-[2rem] shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-slate-100">
             <button onClick={() => setArea(null)} className="flex items-center text-sm font-semibold text-slate-400 hover:text-emerald-600 mb-6 transition-colors">
@@ -438,7 +418,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Floating AI Tutor Box */}
           <div className={`bg-slate-900 rounded-[2rem] p-6 text-white shadow-xl transition-all duration-500 ${showFeedback ? 'opacity-100 translate-y-0' : 'opacity-50 grayscale'}`}>
              <div className="flex items-center mb-4">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${showFeedback ? 'bg-emerald-500' : 'bg-slate-700'}`}>
@@ -473,7 +452,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Right Column: Question Content */}
         <div className="lg:col-span-8">
           <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 min-h-full flex flex-col relative">
             
