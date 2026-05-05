@@ -70,7 +70,7 @@ const initialQuestions: Question[] = [
     explanation:
       'De acuerdo con el artículo 17 de la Ley General de los Derechos de Niñas, Niños y Adolescentes, los menores tienen derecho a que se les brinde protección y socorro en cualquier circunstancia y con la oportunidad necesaria.',
     hack:
-      'Hack del Tutor AI: En los reactivos de "Cuestionamiento directo" normativos, siempre busca la opción que privilegie el Interés Superior de la Niñez por encima de cuestiones administrativas o laborales. Relaciona la palabra "emergencia médica" con "protección y socorro".'
+      'Hack de Ruta de Ascenso IA: En los reactivos de "Cuestionamiento directo" normativos, siempre busca la opción que privilegie el Interés Superior de la Niñez por encima de cuestiones administrativas o laborales. Relaciona la palabra "emergencia médica" con "protección y socorro".'
   },
   {
     id: 2,
@@ -88,7 +88,7 @@ const initialQuestions: Question[] = [
     explanation:
       'El codiseño implica una deliberación colectiva donde el profesorado decide qué contenidos integrar y cómo contextualizarlos, superando la lógica del control administrativo.',
     hack:
-      'Hack del Tutor AI: Para reactivos de "Completamiento", sustituye mentalmente el espacio en blanco. El glosario de la NEM rechaza palabras como "control" o "estandarización" y abraza conceptos como "deliberación", "colectivo" y "contextualización".'
+      'Hack de Ruta de Ascenso IA: Para reactivos de "Completamiento", sustituye mentalmente el espacio en blanco. El glosario de la NEM rechaza palabras como "control" o "estandarización" y abraza conceptos como "deliberación", "colectivo" y "contextualización".'
   },
   {
     id: 3,
@@ -105,7 +105,7 @@ const initialQuestions: Question[] = [
     explanation:
       'El proceso inicia con la construcción/anticipación (3), sigue con la integración (2), la implementación (1) y culmina con la evaluación (4).',
     hack:
-      'Hack del Tutor AI: ¡Regla de oro para el formato de Ordenamiento! Busca siempre el paso inicial lógico (diagnóstico/planeación) y el final (evaluación). Aquí la evaluación es el 4, lo que te deja entre la B y C. No puedes implementar (1) sin antes proponer (2).'
+      'Hack de Ruta de Ascenso IA: ¡Regla de oro para el formato de Ordenamiento! Busca siempre el paso inicial lógico (diagnóstico/planeación) y el final (evaluación). Aquí la evaluación es el 4, lo que te deja entre la B y C. No puedes implementar (1) sin antes proponer (2).'
   },
   {
     id: 4,
@@ -122,7 +122,7 @@ const initialQuestions: Question[] = [
     explanation:
       'Integración curricular promueve el trabajo interdisciplinario (1c). La autonomía permite contextualizar (2b). La comunidad reconoce a los estudiantes en su entorno social (3a).',
     hack:
-      'Hack del Tutor AI: En "Relación de elementos", busca tu "eslabón seguro". Si sabes que "Autonomía" = "Contextualizar" (2b), descartas las opciones que no lo tengan. ¡Ahorrarás tiempo invaluable en el examen!'
+      'Hack de Ruta de Ascenso IA: En "Relación de elementos", busca tu "eslabón seguro". Si sabes que "Autonomía" = "Contextualizar" (2b), descartas las opciones que no lo tengan. ¡Ahorrarás tiempo invaluable en el examen!'
   }
 ];
 
@@ -220,7 +220,7 @@ export default function App() {
     };
 
     const promptText = `
-Genera UN reactivo inédito y de nivel avanzado para el examen de promoción vertical USICAMM 2026-2027.
+Genera UN reactivo inédito y de nivel avanzado para un examen de promoción vertical educativa 2026-2027.
 
 Rol aspirante: ${selectedRole}.
 Área de evaluación: ${selectedArea} - ${areaNames[selectedArea]}.
@@ -237,7 +237,7 @@ INSTRUCCIONES DEL REACTIVO:
 4. Solo una opción debe ser correcta.
 5. Las otras dos opciones deben ser distractores plausibles basados en malas prácticas comunes.
 6. La explicación debe justificar técnicamente la respuesta correcta y citar explícitamente el documento, ley o autor correspondiente de la bibliografía señalada.
-7. El hack debe dar un tip estratégico para el sustentante sobre cómo identificar la trampa del reactivo o descartar opciones rápidamente en este tipo de formato CENEVAL.
+7. El hack debe dar un tip estratégico para el sustentante sobre cómo identificar la trampa del reactivo o descartar opciones rápidamente.
 
 Devuelve ÚNICAMENTE un JSON válido, sin markdown, sin explicación externa y sin texto adicional.
 
@@ -280,7 +280,7 @@ Estructura obligatoria:
                 parts: [
                   {
                     text:
-                      'Eres un diseñador experto de reactivos tipo CENEVAL para la USICAMM. Tu salida debe ser estrictamente JSON válido.'
+                      'Eres un diseñador experto de reactivos tipo CENEVAL para procesos de promoción vertical educativa. Tu salida debe ser estrictamente JSON válido.'
                   }
                 ]
               },
@@ -449,10 +449,10 @@ Estructura obligatoria:
               <BrainCircuit size={32} />
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-slate-900">
-              Tutor <span className="text-emerald-600">USICAMM</span> IA
+              Ruta de <span className="text-emerald-600">Ascenso</span> IA
             </h1>
             <p className="text-lg text-slate-500 max-w-xl mx-auto">
-              Plataforma de preparación inteligente para promoción vertical 2026-2027. Selecciona tu ruta para comenzar.
+              Plataforma de preparación inteligente para procesos de promoción vertical. Selecciona tu ruta para comenzar.
             </p>
           </div>
 
@@ -679,7 +679,7 @@ Estructura obligatoria:
                 <BrainCircuit size={20} className="text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-sm">Tutor IA USICAMM</h4>
+                <h4 className="font-bold text-sm">Ruta de Ascenso IA</h4>
                 <p className="text-xs text-slate-400">
                   {showFeedback ? 'Análisis completado' : 'Esperando tu respuesta...'}
                 </p>
@@ -694,7 +694,7 @@ Estructura obligatoria:
                 </p>
                 <div className="bg-emerald-900/40 border border-emerald-500/30 p-4 rounded-2xl">
                   <strong className="text-emerald-400 flex items-center mb-2 text-sm">
-                    <Sparkles size={14} className="mr-1" /> Hack para el Examen:
+                    <Sparkles size={14} className="mr-1" /> Hack para el examen:
                   </strong>
                   <p className="text-sm text-emerald-50 leading-relaxed">
                     {currentQuestion.hack}
