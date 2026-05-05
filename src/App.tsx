@@ -109,8 +109,8 @@ export default function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
-  // Clave proporcionada por el entorno de ejecución
-  const apiKey = "";
+  // Clave proporcionada por el entorno de ejecución (Vercel)
+  const apiKey = typeof import.meta !== 'undefined' ? (import.meta as any).env.VITE_GEMINI_API_KEY : '';
 
   // Filter questions based on selected area
   const activeQuestions = questionsDatabase.filter(q => area === null || q.area === area);
@@ -120,6 +120,13 @@ export default function App() {
   const generateQuestionWithAI = async (selectedRole: Role, selectedArea: Area) => {
     setIsGenerating(true);
     setErrorMsg(null);
+
+    // Validación temprana de la API Key
+    if (!apiKey || apiKey === "undefined") {
+      setErrorMsg("Falta tu llave secreta de Google (API Key). Asegúrate de haberla agregado en Vercel como VITE_GEMINI_API_KEY y vuelve a realizar el Deploy.");
+      setIsGenerating(false);
+      return;
+    }
     
     const areaNames = {
       1: "Aspectos Normativos (LGE, Derechos NNA, Violencia Sexual 2025, Acoso Escolar)",
@@ -143,13 +150,15 @@ export default function App() {
     4. explanation: Justificación técnica citando explícitamente el documento, ley o autor correspondiente de la bibliografía señalada.
     5. hack: Un tip estratégico para el sustentante sobre cómo identificar la trampa del reactivo o descartar opciones rápidamente en este tipo de formato CENEVAL.`;
 
-    let retries = 5;
+    let retries = 3;
     let delay = 1000;
     let success = false;
+    let lastError = "";
 
     while (retries > 0 && !success) {
       try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+        // USO DEL MODELO PÚBLICO GEMINI 1.5 FLASH
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -185,7 +194,10 @@ export default function App() {
           })
         });
 
-        if (!response.ok) throw new Error("Fallo en la red");
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error?.message || `Error del servidor HTTP ${response.status}`);
+        }
 
         const result = await response.json();
         const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -197,18 +209,22 @@ export default function App() {
           setQuestionsDatabase(prev => [...prev, newQuestion]);
           success = true;
         } else {
-          throw new Error("Respuesta vacía");
+          throw new Error("La IA devolvió una respuesta vacía.");
         }
-      } catch (error) {
+      } catch (error: any) {
+        lastError = error.message || "Error desconocido";
         retries--;
-        if (retries === 0) {
-          setErrorMsg("No pudimos conectar con el servidor de la IA. Por favor, intenta de nuevo en unos segundos.");
-        } else {
+        if (retries > 0) {
           await new Promise(res => setTimeout(res, delay));
-          delay *= 2; // Exponential backoff: 1s, 2s, 4s, 8s, 16s
+          delay *= 2; 
         }
       }
     }
+
+    if (!success) {
+      setErrorMsg(`No pudimos generar el reactivo. Motivo: ${lastError}. Por favor, recarga la página o revisa tu llave de Vercel.`);
+    }
+    
     setIsGenerating(false);
   };
 
@@ -377,8 +393,8 @@ export default function App() {
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 font-sans text-slate-800 text-center">
          <XCircle size={48} className="text-red-500 mb-4" />
          <h2 className="text-xl font-bold mb-2">¡Ups! Algo salió mal</h2>
-         <p className="text-slate-500 max-w-md mb-6">{errorMsg}</p>
-         <button onClick={() => setArea(null)} className="px-6 py-3 bg-slate-900 text-white rounded-xl">Volver e intentar de nuevo</button>
+         <p className="text-slate-500 max-w-md mb-6 leading-relaxed">{errorMsg}</p>
+         <button onClick={() => setArea(null)} className="px-6 py-3 bg-slate-900 text-white rounded-xl">Volver a intentar</button>
       </div>
     )
   }
@@ -463,7 +479,7 @@ export default function App() {
             
             {errorMsg && (
                 <div className="absolute top-4 right-4 left-4 bg-red-100 text-red-700 px-4 py-3 rounded-xl text-sm font-medium flex items-center z-10 animate-fade-in">
-                    <XCircle size={16} className="mr-2" /> {errorMsg}
+                    <XCircle size={16} className="mr-2 shrink-0" /> <span className="leading-tight">{errorMsg}</span>
                 </div>
             )}
 
