@@ -1,4 +1,4 @@
-import , { useState } from 'react';
+import { useState } from 'react';
 import { 
   BookOpen, 
   GraduationCap, 
@@ -35,7 +35,7 @@ interface Question {
   hack: string;
 }
 
-// --- BASE DE DATOS DE REACTIVOS (Basados en las Guías USICAMM 2026-2027) ---
+// --- BASE DE DATOS DE REACTIVOS ---
 const initialQuestions: Question[] = [
   {
     id: 1,
@@ -110,7 +110,7 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
   // Clave proporcionada por el entorno de ejecución
-  const apiKey = ""; 
+  const apiKey = "";
 
   // Filter questions based on selected area
   const activeQuestions = questionsDatabase.filter(q => area === null || q.area === area);
