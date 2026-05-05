@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import , { useState } from 'react';
 import { 
   BookOpen, 
   GraduationCap, 
@@ -115,7 +115,6 @@ export default function App() {
   // Filter questions based on selected area
   const activeQuestions = questionsDatabase.filter(q => area === null || q.area === area);
   const currentQuestion = activeQuestions[currentQuestionIndex];
-  const isFinished = currentQuestionIndex >= activeQuestions.length && activeQuestions.length > 0 && !isGenerating;
 
   // Lógica de llamada a la IA con reintentos automáticos
   const generateQuestionWithAI = async (selectedRole: Role, selectedArea: Area) => {
