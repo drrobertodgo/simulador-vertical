@@ -109,8 +109,8 @@ export default function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
-  // 🔴 CAMBIA ESTA LÍNEA EN STACKBLITZ POR: const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
   const activeQuestions = questionsDatabase.filter(q => area === null || q.area === area);
   const currentQuestion = activeQuestions[currentQuestionIndex];
 
@@ -118,6 +118,12 @@ export default function App() {
     setIsGenerating(true);
     setErrorMsg(null);
     
+    if (!apiKey) {
+      setErrorMsg("No se detectó la API Key. Por favor, asegúrate de haberla cambiado en el código de StackBlitz y de tener la variable en Vercel.");
+      setIsGenerating(false);
+      return;
+    }
+
     const areaNames = {
       1: "Aspectos Normativos (LGE, Derechos NNA, Violencia Sexual 2025, Acoso Escolar)",
       2: "Gestión Escolar (Supervisión Zorrilla, Mejora Continua, CTE como Comunidad de Aprendizaje)",
@@ -147,7 +153,8 @@ export default function App() {
 
     while (retries > 0 && !success) {
       try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+        // USO DEL MODELO PÚBLICO OFICIAL: gemini-1.5-flash
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
